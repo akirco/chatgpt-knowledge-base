@@ -15,8 +15,8 @@ export default function IconText({
     <Flex
       alignItems={'center'}
       justifyContent={'space-between'}
-      w="72px"
-      marginRight={'15px'}
+      w="90px"
+      marginRight={'25px'}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
     >

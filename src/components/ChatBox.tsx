@@ -1,19 +1,22 @@
-import { Avatar, Box, Checkbox, Tooltip } from '@chakra-ui/react';
+import { Avatar, Box, Checkbox, Tooltip, IconButton } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { useEffect, useRef, useState } from 'react';
-import { CopyIcon, DownloadIcon } from '@chakra-ui/icons';
+import {
+  CopyIcon,
+  DownloadIcon,
+  RepeatIcon,
+  StarIcon,
+  UpDownIcon,
+} from '@chakra-ui/icons';
 import MarkdownIt from 'markdown-it';
 import mdHighlight from 'markdown-it-highlightjs';
 import mdKbd from 'markdown-it-kbd';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import mdKatex from 'markdown-it-katex';
 import { preWrapperPlugin } from '../utils';
 import userAvatar from '../assets/user.jpg';
 import assistantAvatar from '../assets/assistant.png';
 import 'highlight.js/styles/tokyo-night-dark.css';
 import '../assets/style/chatbox.css';
-import IconText from './IconText';
 
 export type MessageBubbleProps = {
   message: string;
@@ -32,10 +35,8 @@ const MessageBubbleContainer = styled.div<{ role: 'user' | 'assistant' }>`
   align-items: flex-start;
   margin-bottom: 16px;
   align-items: center;
-  /* 动画效果 */
   animation: pop-up 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
   animation-fill-mode: backwards;
-
   @keyframes pop-up {
     from {
       opacity: 0;
@@ -166,22 +167,25 @@ const MessageBubble = ({ message, role }: MessageBubbleProps) => {
   );
 };
 
+interface ChatBoxProps {
+  messages: Array<MessageBubbleProps>;
+  isStream?: boolean;
+  handleBoxChange?: () => void;
+  handleExportBtnClick?: () => void;
+  handleCollapseBtnClick?: () => void;
+}
+
 const ChatBox = ({
   messages,
   isStream,
   handleBoxChange,
   handleExportBtnClick,
-}: {
-  messages: Array<MessageBubbleProps>;
-  isStream?: boolean;
-  handleBoxChange?: () => void;
-  handleExportBtnClick?: () => void;
-}) => {
+  handleCollapseBtnClick,
+}: ChatBoxProps) => {
   const chatBoxRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (chatBoxRef.current) {
       const chatBox = chatBoxRef.current;
-
       chatBox.scrollTop = chatBox.scrollHeight;
     }
   }, [messages]);
@@ -195,16 +199,57 @@ const ChatBox = ({
           role={message.role}
         />
       ))}
-      <Box mt="auto" display="flex">
-        <IconText text="stream">
-          <Checkbox
-            defaultChecked={isStream}
-            onChange={handleBoxChange}
-          ></Checkbox>
-        </IconText>
-        <IconText text="export" onClick={handleExportBtnClick}>
-          <DownloadIcon cursor="pointer" />
-        </IconText>
+      <Box
+        mt="auto"
+        display="grid"
+        gap={3}
+        gridTemplateColumns="repeat(18, 1fr)"
+      >
+        <Tooltip label="Is stream reply?">
+          <IconButton aria-label="stream" size={'sm'}>
+            <Checkbox
+              defaultChecked={isStream}
+              onChange={handleBoxChange}
+              colorScheme={'facebook'}
+            ></Checkbox>
+          </IconButton>
+        </Tooltip>
+        <Tooltip label="Export chat content">
+          <IconButton
+            aria-label="export"
+            onClick={handleExportBtnClick}
+            size={'sm'}
+          >
+            <DownloadIcon cursor="pointer" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip label="Immersement Chating">
+          <IconButton
+            aria-label="collapse"
+            onClick={handleCollapseBtnClick}
+            size={'sm'}
+          >
+            <UpDownIcon cursor="pointer" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip label="Immersement Chating">
+          <IconButton
+            aria-label="collapse"
+            onClick={handleCollapseBtnClick}
+            size={'sm'}
+          >
+            <RepeatIcon cursor="pointer" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip label="Immersement Chating">
+          <IconButton
+            aria-label="collapse"
+            onClick={handleCollapseBtnClick}
+            size={'sm'}
+          >
+            <StarIcon cursor="pointer" />
+          </IconButton>
+        </Tooltip>
       </Box>
     </ChatBoxContainer>
   );

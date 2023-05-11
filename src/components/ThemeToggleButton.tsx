@@ -17,6 +17,11 @@ const RoundButton = styled(IconButton, transientOptions)`
     bottom: 20px;
     right: 30px;
   }
+  @media (max-width: 950px) {
+    position: absolute;
+    top: 50px;
+    right: 10%;
+  }
   @media (max-width: 780px) {
     position: absolute;
     top: 50px;

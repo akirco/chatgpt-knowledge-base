@@ -1163,6 +1163,11 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.7.tgz#ccab5c8f7dc557a52ca3288c10075c9ccd37fff7"
   integrity sha512-Cr4OjIkipTtcXKjAsm8agyleBuDHvxzeBoa1v543lbv1YaIwQjESsVcmjiWiPEbC1FIeHOG/Op9kdCmAmiS3Kw==
 
+"@remix-run/router@1.6.1":
+  version "1.6.1"
+  resolved "https://registry.npmmirror.com/@remix-run/router/-/router-1.6.1.tgz#3a3a408481a3796f45223a549c2571517bc8af2d"
+  integrity sha512-YUkWj+xs0oOzBe74OgErsuR3wVn+efrFhXBWrit50kOiED+pvQe2r6MWY0iJMQU/mSVKxvNzL4ZaYvjdX+G7ZA==
+
 "@swc/core-darwin-arm64@1.3.56":
   version "1.3.56"
   resolved "https://registry.yarnpkg.com/@swc/core-darwin-arm64/-/core-darwin-arm64-1.3.56.tgz#a846f7fdbc274aa7d299568031dde025d44a3b4c"
@@ -2435,6 +2440,21 @@ react-remove-scroll@^2.5.5:
     use-callback-ref "^1.3.0"
     use-sidecar "^1.1.2"
 
+react-router-dom@^6.11.1:
+  version "6.11.1"
+  resolved "https://registry.npmmirror.com/react-router-dom/-/react-router-dom-6.11.1.tgz#af226bae950deb437208a606a47cf5c2d72c55dc"
+  integrity sha512-dPC2MhoPeTQ1YUOt5uIK376SMNWbwUxYRWk2ZmTT4fZfwlOvabF8uduRKKJIyfkCZvMgiF0GSCQckmkGGijIrg==
+  dependencies:
+    "@remix-run/router" "1.6.1"
+    react-router "6.11.1"
+
+react-router@6.11.1:
+  version "6.11.1"
+  resolved "https://registry.npmmirror.com/react-router/-/react-router-6.11.1.tgz#6e58458c03e16834dda2b433c6adb9e7c2b1d7a8"
+  integrity sha512-OZINSdjJ2WgvAi7hgNLazrEV8SGn6xrKA+MkJe9wVDMZ3zQ6fdJocUjpCUCI0cNrelWjcvon0S/QK/j0NzL3KA==
+  dependencies:
+    "@remix-run/router" "1.6.1"
+
 react-style-singleton@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/react-style-singleton/-/react-style-singleton-2.2.1.tgz#f99e420492b2d8f34d38308ff660b60d0b1205b4"
@@ -2555,10 +2575,10 @@ sse.js@^0.6.1:
   resolved "https://registry.yarnpkg.com/sse.js/-/sse.js-0.6.1.tgz#1de304f51a5b870e78c0ad72c3b1d7b682a733a1"
   integrity sha512-peXG6GnWqF5hnubhMw0WfB6rqQy7z7LaMBT067vqgQwC3gKz8JGFzexBSV80FqZ9JoUDwo3Xt5nxkrGrgbPrtA==
 
-stream-fetch-processor@^0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/stream-fetch-processor/-/stream-fetch-processor-0.1.4.tgz#fdecd52c047d7e5dc33649944818bcb4d6a399e6"
-  integrity sha512-hnYU6WyJbs1BCOoRCZAu9c03fMfuauFbqEX1KfVGaTfCVTUowj7gugxUcdyiQpBEyCeWJ2KJ1Qo5rOo7CFQGow==
+stream-fetch-processor@^0.1.8:
+  version "0.1.8"
+  resolved "https://registry.npmjs.org/stream-fetch-processor/-/stream-fetch-processor-0.1.8.tgz#334f88aabdd2ea22794ad3b1ab393d70cd0e2fb2"
+  integrity sha512-02he7dXPzEm82WV5Ti3Mv9HLao8V6BjWHUyYbXuOWqn44BYPgV2QS8yPHIHUMVwOo160+ZH3pWqfDkl01PQ+SA==
 
 strip-ansi@^6.0.1:
   version "6.0.1"
