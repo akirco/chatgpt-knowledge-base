@@ -1,10 +1,16 @@
-import ChatBox, { MessageBubbleProps } from '../components/ChatBox';
-import SendButton from '../components/SendButton';
-import { saveAs } from 'file-saver';
-import { useState, KeyboardEvent, ChangeEvent, useCallback } from 'react';
-import { requestData, OpenAIWithOutStreamResponse } from '../api/request';
-import { getCurrentDateTime } from '../utils';
-import { GithubOAuth } from '../components/Github';
+import ChatBox, { MessageBubbleProps } from "../components/ChatBox";
+import { requestData, OpenAIWithOutStreamResponse } from "../api/request";
+import { getCurrentDateTime } from "../utils";
+import SendButton from "../components/SendButton";
+import { saveAs } from "file-saver";
+import {
+  useState,
+  KeyboardEvent,
+  ChangeEvent,
+  useCallback,
+  useEffect,
+} from "react";
+
 import {
   Card,
   CardHeader,
@@ -17,16 +23,37 @@ import {
   useColorModeValue,
   Collapse,
   useDisclosure,
-} from '@chakra-ui/react';
+  CardFooter,
+  Tooltip,
+  Box,
+  Checkbox,
+  IconButton,
+} from "@chakra-ui/react";
+import {
+  DeleteIcon,
+  DownloadIcon,
+  RepeatIcon,
+  UpDownIcon,
+} from "@chakra-ui/icons";
 
 function ChatView() {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<Array<MessageBubbleProps>>([]);
   const [isStream, setIsStream] = useState(true);
+  const [isLoading, setLoading] = useState(false);
   const { isOpen, onToggle } = useDisclosure();
 
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (messages.length > 0 && lastMessage.role === "user") {
+      fetchData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
+
   const fetchData = async () => {
-    const res = await requestData(inputValue, isStream);
+    const res = await requestData(messages, isStream);
+
     const data = res.body;
     const reader = data?.getReader();
     const decoder = new TextDecoder();
@@ -34,17 +61,23 @@ function ChatView() {
     while (!done) {
       let message: string;
       const chunks = await reader?.read();
+
+      setLoading(!chunks?.done);
+
       done = chunks?.done as boolean;
       const chunkValue = decoder.decode(chunks?.value);
+      console.log(chunkValue);
+
       if (!isStream) {
         const data: OpenAIWithOutStreamResponse = JSON.parse(chunkValue);
+
         message = data.choices[0].message.content;
       } else {
         message = chunkValue;
       }
       pushMessage({
-        message: message,
-        role: 'assistant',
+        content: message,
+        role: "assistant",
       });
     }
   };
@@ -53,10 +86,10 @@ function ChatView() {
     (message: MessageBubbleProps) => {
       setMessages((prevMessages) => {
         const lastMessage = prevMessages[prevMessages.length - 1];
-        if (message.role !== 'user' && lastMessage?.role === 'assistant') {
+        if (message.role !== "user" && lastMessage?.role === "assistant") {
           return [
             ...prevMessages.slice(0, -1),
-            { ...lastMessage, message: lastMessage.message + message.message },
+            { ...lastMessage, content: lastMessage.content + message.content },
           ];
         } else {
           return [...prevMessages, message];
@@ -71,21 +104,19 @@ function ChatView() {
   };
 
   const handleSendBtnClick = () => {
-    if (inputValue) {
-      pushMessage({ role: 'user', message: inputValue });
-      setInputValue('');
-      fetchData();
+    if (inputValue.trim().length > 0) {
+      pushMessage({ role: "user", content: inputValue.trim() });
+      setInputValue("");
     }
   };
 
-  const handleInputKeyDown = async (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (inputValue && e.key === 'Enter') {
+  const handleInputKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (inputValue.trim().length > 0 && e.key === "Enter") {
       pushMessage({
-        message: inputValue,
-        role: 'user',
+        content: inputValue.trim(),
+        role: "user",
       });
-      setInputValue('');
-      fetchData();
+      setInputValue("");
     }
   };
 
@@ -94,18 +125,37 @@ function ChatView() {
   };
 
   const handleExportBtnClick = () => {
-    const markdown = messages
-      .map((k) => {
-        if (k.role === 'user') {
-          return `**🔒question:**\n${k.message.trim()}\n`;
-        } else {
-          return `**🗝️reply:**\n${k.message.trim()}\n\n ------`;
-        }
-      })
-      .join('\n');
-    const blob = new Blob([markdown], { type: 'text/markdown' });
-    const filename = getCurrentDateTime() + '.md';
-    saveAs(blob, filename);
+    if (messages.length > 0) {
+      const markdown = messages
+        .map((k) => {
+          if (k.role === "user") {
+            return `**🔒question:**\n${k.content.trim()}\n`;
+          } else {
+            return `**🗝️reply:**\n${k.content.trim()}\n\n ------`;
+          }
+        })
+        .join("\n");
+      const blob = new Blob([markdown], { type: "text/markdown" });
+      const filename = getCurrentDateTime() + ".md";
+      saveAs(blob, filename);
+    } else {
+      return;
+    }
+  };
+
+  const handleCleanBtnClick = () => {
+    setMessages([]);
+  };
+  const handleReGenerateBtnClick = () => {
+    const lastMessages = messages[messages.length - 1];
+    const currentMessage = messages[messages.length - 2];
+    if (lastMessages.role === "assistant" && currentMessage.role === "user") {
+      const newMessages = [...messages];
+      newMessages.pop();
+      setMessages(newMessages);
+    } else {
+      return;
+    }
   };
   /* -------------------------------------------------------------------------- */
   /*                                    main                                    */
@@ -117,49 +167,96 @@ function ChatView() {
         w="100%"
         h="100%"
         py={2}
-        justifyContent={'space-between'}
-        alignItems={'center'}
+        justifyContent={"space-between"}
+        alignItems={"center"}
       >
         <Card
-          w={['95%', '85%', '75%', '65%', '55%']}
-          height={'calc(100% - 140px)'}
+          w={["95%", "85%", "75%", "65%", "55%"]}
+          height={"calc(100% - 140px)"}
           className="card-chat"
-          bg={useColorModeValue('white', '#16161e')}
+          bg={useColorModeValue("white", "#16161e")}
         >
           <Collapse in={!isOpen} animateOpacity>
             <CardHeader
-              display={'flex'}
-              justifyContent={'space-between'}
-              alignItems={'center'}
+              display={"flex"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
             >
               <div>
-                <Heading as={'h3'} fontFamily="Noto Serif">
+                <Heading as={"h3"} fontFamily="Noto Serif">
                   chatbot
                 </Heading>
-                <Text color={'#737aa2'}>A smart assitant for you.</Text>
+                <Text color={"#737aa2"}>A smart assitant for you.</Text>
               </div>
-              <GithubOAuth />
             </CardHeader>
-            <Divider color={'#96a0d4'} />
+            <Divider color={"#96a0d4"} />
           </Collapse>
-          <CardBody overflowY={'auto'}>
-            <ChatBox
-              messages={messages}
-              isStream={isStream}
-              handleBoxChange={handleBoxChange}
-              handleExportBtnClick={handleExportBtnClick}
-              handleCollapseBtnClick={onToggle}
-            />
+          <CardBody overflowY={"auto"}>
+            <ChatBox messages={messages} />
           </CardBody>
+          <CardFooter>
+            <Box
+              mt="auto"
+              display="grid"
+              gap={3}
+              gridTemplateColumns="repeat(18, 1fr)"
+            >
+              <Tooltip label="Is stream reply?">
+                <IconButton aria-label="stream" size={"sm"}>
+                  <Checkbox
+                    defaultChecked={isStream}
+                    onChange={handleBoxChange}
+                    colorScheme={"facebook"}
+                  ></Checkbox>
+                </IconButton>
+              </Tooltip>
+              <Tooltip label="Export chat content">
+                <IconButton
+                  aria-label="export"
+                  onClick={handleExportBtnClick}
+                  size={"sm"}
+                >
+                  <DownloadIcon cursor="pointer" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip label="Immersement Chating">
+                <IconButton
+                  aria-label="collapse"
+                  onClick={onToggle}
+                  size={"sm"}
+                >
+                  <UpDownIcon cursor="pointer" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip label="regenerate chat content">
+                <IconButton
+                  aria-label="collapse"
+                  onClick={handleReGenerateBtnClick}
+                  size={"sm"}
+                >
+                  <RepeatIcon cursor="pointer" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip label="clean current chat content">
+                <IconButton
+                  aria-label="collapse"
+                  onClick={handleCleanBtnClick}
+                  size={"sm"}
+                >
+                  <DeleteIcon cursor="pointer" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </CardFooter>
         </Card>
         <Card
-          w={['95%', '85%', '75%', '65%', '55%']}
+          w={["95%", "85%", "75%", "65%", "55%"]}
           h="120px"
           pos="fixed"
           bottom={3}
-          bg={useColorModeValue('#fff', '#16161e')}
+          bg={useColorModeValue("#fff", "#16161e")}
         >
-          <CardBody display="flex" alignItems={'center'}>
+          <CardBody display="flex" alignItems={"center"}>
             <Textarea
               value={inputValue}
               onChange={handleTextChange}
@@ -167,10 +264,10 @@ function ChatView() {
               variant="flushed"
               placeholder="typing your questions..."
               resize="none"
-              minH={'4rem'}
+              minH={"4rem"}
               autoFocus
             />
-            <SendButton onClick={handleSendBtnClick} />
+            <SendButton onClick={handleSendBtnClick} isLoading={isLoading} />
           </CardBody>
         </Card>
       </Flex>

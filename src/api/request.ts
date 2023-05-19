@@ -2,9 +2,9 @@ import {
   createParser,
   ParsedEvent,
   ReconnectInterval,
-} from 'eventsource-parser';
+} from "eventsource-parser";
 
-export type ChatGPTAgent = 'user' | 'system';
+export type ChatGPTAgent = "user" | "system" | "assistant";
 
 export interface ChatGPTMessage {
   role: ChatGPTAgent;
@@ -36,10 +36,10 @@ export interface OpenAIWithOutStreamResponse {
   choices: [
     {
       message: {
-        role: 'assistant';
+        role: "assistant";
         content: string;
       };
-      finish_reason: 'stop';
+      finish_reason: "stop";
       index: number;
     }
   ];
@@ -47,7 +47,7 @@ export interface OpenAIWithOutStreamResponse {
 
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 const API_KEY_PROXY_URL =
-  import.meta.env.VITE_OPENAI_API_PROXY_URL ?? 'https://api.openai.com';
+  import.meta.env.VITE_OPENAI_API_PROXY_URL ?? "https://api.openai.com";
 
 export async function OpenAIStream(payload: OpenAIStreamPayload) {
   const encoder = new TextEncoder();
@@ -57,11 +57,11 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
 
   const res = await window.fetch(`${API_KEY_PROXY_URL}/v1/chat/completions`, {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${API_KEY}`,
-      Origin: '*',
+      Origin: "*",
     },
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(payload),
   });
 
@@ -69,17 +69,17 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
     async start(controller) {
       // callback
       function onParse(event: ParsedEvent | ReconnectInterval) {
-        if (event.type === 'event') {
+        if (event.type === "event") {
           const data = event.data;
           // https://beta.openai.com/docs/api-reference/completions/create#completions/create-stream
-          if (data === '[DONE]') {
+          if (data === "[DONE]") {
             controller.close();
             return;
           }
           try {
             const json = JSON.parse(data);
 
-            const text = json.choices[0].delta?.content || '';
+            const text = json.choices[0].delta?.content || "";
             if (counter < 2 && (text.match(/\n/) || []).length) {
               return;
             }
@@ -115,26 +115,26 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
 export async function OpenAIWithOutStream(payload: OpenAIStreamPayload) {
   return await window.fetch(`${API_KEY_PROXY_URL}/v1/chat/completions`, {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${API_KEY}`,
-      Origin: '*',
+      Origin: "*",
     },
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(payload),
   });
 }
 
 export async function requestData(
-  prompt: string,
+  messages: ChatGPTMessage[],
   isStream: boolean
 ): Promise<Response> {
   if (!prompt) {
-    return new Response('No prompt in the request', { status: 400 });
+    return new Response("No prompt in the request", { status: 400 });
   }
 
   const payload: OpenAIStreamPayload = {
-    model: 'gpt-3.5-turbo',
-    messages: [{ role: 'user', content: prompt }],
+    model: "gpt-3.5-turbo",
+    messages,
     temperature: 0.7,
     top_p: 1,
     frequency_penalty: 0,

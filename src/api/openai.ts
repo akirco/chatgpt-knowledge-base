@@ -1,10 +1,10 @@
-import streamFetchProcessor from 'stream-fetch-processor';
-import { OpenAIStreamPayload } from './request';
+import streamFetchProcessor from "stream-fetch-processor";
+import { OpenAIStreamPayload } from "./request";
 
 const sfp = new streamFetchProcessor();
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 const API_KEY_PROXY_URL =
-  import.meta.env.VITE_OPENAI_API_PROXY_URL ?? 'https://api.openai.com';
+  import.meta.env.VITE_OPENAI_API_PROXY_URL ?? "https://api.openai.com";
 
 type responseType = {
   id: string;
@@ -25,8 +25,8 @@ type responseType = {
 
 export async function* requestWithStream(prompt: string) {
   const payload: OpenAIStreamPayload = {
-    model: 'gpt-3.5-turbo',
-    messages: [{ role: 'user', content: prompt }],
+    model: "gpt-3.5-turbo",
+    messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
     top_p: 1,
     frequency_penalty: 0,
@@ -37,17 +37,17 @@ export async function* requestWithStream(prompt: string) {
   };
   const response = await sfp.fetch(`${API_KEY_PROXY_URL}/v1/chat/completions`, {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${API_KEY}`,
-      Origin: '*',
+      Origin: "*",
     },
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(payload),
   });
   if (response.ok) {
     const asyncResult = sfp.read();
     for await (const data of await asyncResult) {
-      if (data.length > 0 && data !== '[DONE]') {
+      if (data.length > 0 && data !== "[DONE]") {
         yield JSON.parse(data) as responseType;
       }
     }
@@ -57,8 +57,8 @@ export async function* requestWithStream(prompt: string) {
 export class streamController {
   async *requestWithStream(prompt: string) {
     const payload: OpenAIStreamPayload = {
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
       top_p: 1,
       frequency_penalty: 0,
@@ -71,18 +71,18 @@ export class streamController {
       `${API_KEY_PROXY_URL}/v1/chat/completions`,
       {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${API_KEY}`,
-          Origin: '*',
+          Origin: "*",
         },
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(payload),
       }
     );
     if (response.ok) {
       const asyncResult = sfp.read();
       for await (const data of await asyncResult) {
-        if (data.length > 0 && data !== '[DONE]') {
+        if (data.length > 0 && data !== "[DONE]") {
           yield JSON.parse(data) as responseType;
         }
       }

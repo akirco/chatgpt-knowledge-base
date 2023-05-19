@@ -1,17 +1,20 @@
-import { ArrowForwardIcon } from '@chakra-ui/icons';
+import { ArrowForwardIcon } from "@chakra-ui/icons";
 
-import { IconButton } from '@chakra-ui/react';
+import { Button } from "@chakra-ui/react";
 
 interface SendButtonProps {
   onClick: () => void;
+  isLoading: boolean;
 }
 
-export default function SendButton({ onClick }: SendButtonProps) {
+export default function SendButton({ onClick, isLoading }: SendButtonProps) {
   return (
-    <IconButton
+    <Button
       aria-label="send message"
-      icon={<ArrowForwardIcon />}
+      leftIcon={<ArrowForwardIcon />}
+      iconSpacing={"-1"}
+      isLoading={isLoading}
       onClick={onClick}
-    />
+    ></Button>
   );
 }
