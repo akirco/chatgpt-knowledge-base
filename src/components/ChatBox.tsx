@@ -146,7 +146,7 @@ const MessageBubble = ({ content, role }: MessageBubbleProps) => {
         >
           <div
             ref={codeRef}
-            style={{ marginRight: "15px" }}
+            style={{ marginRight: "15px", marginLeft: "15px" }}
             dangerouslySetInnerHTML={{ __html: md.render(content) }}
           ></div>
 
