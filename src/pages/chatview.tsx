@@ -174,7 +174,7 @@ function ChatView() {
       >
         <Card
           w={["95%", "85%", "75%", "65%", "55%"]}
-          height={"calc(100% - 140px)"}
+          height={"calc(100% - 130px)"}
           className="card-chat"
           bg={useColorModeValue("white", "#16161e")}
         >
@@ -263,8 +263,6 @@ function ChatView() {
         <Card
           w={["95%", "85%", "75%", "65%", "55%"]}
           h="120px"
-          pos="fixed"
-          bottom={3}
           bg={useColorModeValue("#fff", "#16161e")}
         >
           <CardBody display="flex" alignItems={"center"}>
