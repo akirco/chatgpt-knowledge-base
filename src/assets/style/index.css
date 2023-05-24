@@ -1,4 +1,10 @@
-@import url(http://fonts.font.im/css?family=Noto+Serif:700,700italic);
+@font-face {
+  font-family: "Noto Serif";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../fonts/Noto Serif.ttf") format("truetype");
+}
+
 /* 隐藏浏览器默认样式 */
 ::-webkit-scrollbar {
   display: none;

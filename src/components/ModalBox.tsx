@@ -7,13 +7,13 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import React from "react";
+import { ReactNode } from "react";
 interface ModalBoxProps {
   showModal: boolean;
   closeModal: () => void;
-  modalHeader?: JSX.Element;
-  modalBody: React.ReactNode;
-  modalFooter?: JSX.Element;
+  modalHeader?: ReactNode;
+  modalBody: ReactNode;
+  modalFooter?: ReactNode;
 }
 
 export default function ModalBox({

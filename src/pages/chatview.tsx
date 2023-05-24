@@ -2,6 +2,7 @@ import ChatBox, { MessageBubbleProps } from "../components/ChatBox";
 import { requestData, OpenAIWithOutStreamResponse } from "../api/request";
 import { getCurrentDateTime } from "../utils";
 import SendButton from "../components/SendButton";
+import ModalBox from "../components/ModalBox";
 import { saveAs } from "file-saver";
 import {
   useState,
@@ -34,6 +35,7 @@ import {
   DownloadIcon,
   RepeatIcon,
   UpDownIcon,
+  StarIcon,
 } from "@chakra-ui/icons";
 
 function ChatView() {
@@ -42,6 +44,7 @@ function ChatView() {
   const [isStream, setIsStream] = useState(true);
   const [isLoading, setLoading] = useState(false);
   const { isOpen, onToggle } = useDisclosure();
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
@@ -66,7 +69,6 @@ function ChatView() {
 
       done = chunks?.done as boolean;
       const chunkValue = decoder.decode(chunks?.value);
-      console.log(chunkValue);
 
       if (!isStream) {
         const data: OpenAIWithOutStreamResponse = JSON.parse(chunkValue);
@@ -184,7 +186,7 @@ function ChatView() {
             >
               <div>
                 <Heading as={"h3"} fontFamily="Noto Serif">
-                  chatbot
+                  Chatty
                 </Heading>
                 <Text color={"#737aa2"}>A smart assitant for you.</Text>
               </div>
@@ -246,6 +248,15 @@ function ChatView() {
                   <DeleteIcon cursor="pointer" />
                 </IconButton>
               </Tooltip>
+              <Tooltip label="dnoate">
+                <IconButton
+                  aria-label="collapse"
+                  onClick={() => setShow(true)}
+                  size={"sm"}
+                >
+                  <StarIcon cursor="pointer" />
+                </IconButton>
+              </Tooltip>
             </Box>
           </CardFooter>
         </Card>
@@ -271,6 +282,11 @@ function ChatView() {
           </CardBody>
         </Card>
       </Flex>
+      <ModalBox
+        showModal={show}
+        closeModal={() => setShow(false)}
+        modalBody={<div>something here...</div>}
+      ></ModalBox>
     </>
   );
 }

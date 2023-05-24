@@ -7,7 +7,7 @@ import mdHighlight from "markdown-it-highlightjs";
 import mdKbd from "markdown-it-kbd";
 import mdKatex from "markdown-it-katex";
 import { preWrapperPlugin } from "../utils";
-import userAvatar from "../assets/icon/person.png";
+import userAvatar from "../assets/icon/person.jpg";
 import assistantAvatar from "../assets/icon/bot.png";
 import "highlight.js/styles/tokyo-night-dark.css";
 import "../assets/style/chatbox.css";
@@ -48,8 +48,8 @@ const MessageTextContainer = styled.div<{ role: "user" | "assistant" }>`
   background-color: ${({ role }) => (role === "user" ? "#2C7A7B" : "#E2E8F0")};
   color: ${({ role }) => (role === "user" ? "#FFFFFF" : "#1A202C")};
   border-radius: 8px;
-  padding: 10px;
-  margin: 8px;
+  padding: 8px;
+  margin: 4px;
   @media (max-width: 780px) {
     width: calc(100% - 70px);
   }
